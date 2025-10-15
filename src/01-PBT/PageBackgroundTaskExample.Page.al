@@ -13,7 +13,10 @@ page 50100 PageBackgroundTaskExample
                 field(Name; 'Some Name') { }
                 field(Description; 'Some Description') { }
                 field(ExpensiveField; SomeExpensiveReadingOperation()) { }
-                field(ExpensiveFieldInBackground; ExpensiveFieldInBackground) { }
+                field(ExpensiveFieldInBackground; ExpensiveFieldInBackground)
+                {
+                    Editable = false;
+                }
             }
         }
     }
@@ -25,11 +28,11 @@ page 50100 PageBackgroundTaskExample
     local procedure SomeExpensiveReadingOperation(): Decimal
     begin
         // Simulate an expensive operation
-        Sleep(5000);
+        Sleep(2000);
         exit(123.45);
     end;
 
-    trigger OnAfterGetRecord()
+    trigger OnOpenPage()
     begin
         StartBackgroundCalculation();
     end;
@@ -44,6 +47,7 @@ page 50100 PageBackgroundTaskExample
     trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])
     begin
         Evaluate(ExpensiveFieldInBackground, Results.Get('ExpensiveFieldInBackground'));
+        CurrPage.Update(false);
     end;
 
     trigger OnPageBackgroundTaskError(TaskId: Integer; ErrorCode: Text; ErrorText: Text; ErrorCallStack: Text; var IsHandled: Boolean)
