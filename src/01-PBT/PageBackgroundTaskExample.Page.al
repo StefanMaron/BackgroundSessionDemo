@@ -41,6 +41,7 @@ page 50100 PageBackgroundTaskExample
     var
         Parameters: Dictionary of [Text, Text];
     begin
+        Parameters.Add('SomeValue', '42');
         CurrPage.EnqueueBackgroundTask(ExpensiveFieldInBackgroundTaskId, Codeunit::ExpensiveFieldCalculationBPT, Parameters);
     end;
 
