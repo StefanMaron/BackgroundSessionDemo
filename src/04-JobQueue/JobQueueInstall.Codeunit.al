@@ -5,7 +5,6 @@ codeunit 50103 "Job Queue Install"
     trigger OnInstallAppPerCompany()
     begin
         CreateJobQueueCategory();
-        CreateJobQueue();
         UpdateSalesReceivablesSetup();
         CreateRecurringJobQueueEntry();
     end;
@@ -14,26 +13,13 @@ codeunit 50103 "Job Queue Install"
     var
         JobQueueCategory: Record "Job Queue Category";
     begin
-        if JobQueueCategory.Get('EMAILNOTIFY') then
+        if JobQueueCategory.Get('EMAILNOTIF') then
             exit;
 
         JobQueueCategory.Init();
-        JobQueueCategory.Code := 'EMAILNOTIFY';
+        JobQueueCategory.Code := 'EMAILNOTIF';
         JobQueueCategory.Description := 'Email Notification Handler';
         JobQueueCategory.Insert(true);
-    end;
-
-    local procedure CreateJobQueue()
-    var
-        JobQueue: Record "Job Queue";
-    begin
-        if JobQueue.Get('DIRECTIONS') then
-            exit;
-
-        JobQueue.Init();
-        JobQueue.Code := 'DIRECTIONS';
-        JobQueue.Description := 'Directions Demo';
-        JobQueue.Insert(true);
     end;
 
     local procedure UpdateSalesReceivablesSetup()
@@ -44,9 +30,9 @@ codeunit 50103 "Job Queue Install"
             exit;
 
         SalesReceivablesSetup."Past Due Email Templ. Code PTE" := 'PASTDUE';
-        SalesReceivablesSetup."Past Due Email JQ Category PTE" := 'EMAILNOTIFY';
+        SalesReceivablesSetup."Past Due Email JQ Category PTE" := 'EMAILNOTIF';
         SalesReceivablesSetup."Blocked Email Templ. Code PTE" := 'CUSTBLOCK';
-        SalesReceivablesSetup."Blocked Email JQ Category PTE" := 'EMAILNOTIFY';
+        SalesReceivablesSetup."Blocked Email JQ Category PTE" := 'EMAILNOTIF';
         SalesReceivablesSetup.Modify(true);
     end;
 
