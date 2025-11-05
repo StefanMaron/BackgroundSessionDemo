@@ -186,16 +186,6 @@ page 50112 "Task Scheduler Demo"
                     // Check the Task Execution Log to see results
                     // ═══════════════════════════════════════════════════════════════════════════
 
-                    Message('3 tasks scheduled!\' +
-                            '\' +
-                            'Task 1: Will run immediately\' +
-                            'Task 2: Will run after 3 seconds\' +
-                            'Task 3: Will run after 6 seconds\' +
-                            '\' +
-                            'All 3 tasks use the SAME worker codeunit.\' +
-                            '\' +
-                            'View the Task Execution Log to see results as they complete.');
-
                     // Open log page to show results
                     Page.Run(Page::"Task Execution Log");
                 end;
@@ -215,12 +205,6 @@ page 50112 "Task Scheduler Demo"
                 var
                     TaskLog: Record "Task Execution Log";
                     FailingTaskId: Guid;
-                    StartTime: DateTime;
-                    DialogWindow: Dialog;
-                    TimeoutMs: Integer;
-                    PollIntervalMs: Integer;
-                    ElapsedTime: Duration;
-                    TaskStatus: Text;
                 begin
                     // ═══════════════════════════════════════════════════════════════════════════
                     // MICROSOFT'S PATTERN: RecordID-based Task Tracking
@@ -233,23 +217,12 @@ page 50112 "Task Scheduler Demo"
                     // 5. Failure handler can call GetLastErrorText()!
                     // ═══════════════════════════════════════════════════════════════════════════
 
-                    TimeoutMs := 10000; // 10 second timeout
-                    PollIntervalMs := 500;
-                    StartTime := CurrentDateTime;
-
                     // STEP 1: Create log entry BEFORE scheduling task
                     TaskLog.Init();
                     TaskLog."Entry No." := 0; // Auto-increment
                     TaskLog."Execution Time" := CurrentDateTime;
                     TaskLog.Status := TaskLog.Status::Pending;
                     TaskLog.Insert(true);
-
-                    DialogWindow.Open(
-                        'Failure Handler Demo\' +
-                        '\' +
-                        'Task Status: #1#####################\' +
-                        '\' +
-                        'Elapsed Time: #2########');
 
                     // STEP 2: Schedule task with RecordID
                     // Both main task AND failure handler receive this record
@@ -266,40 +239,7 @@ page 50112 "Task Scheduler Demo"
                     TaskLog."Task ID" := FailingTaskId;
                     TaskLog.Modify(true);
 
-                    TaskStatus := 'Scheduled (will fail)';
-
-                    // Monitor task execution
-                    repeat
-                        if TaskScheduler.TaskExists(FailingTaskId) then
-                            TaskStatus := 'Running/Waiting'
-                        else
-                            TaskStatus := 'Completed (removed)';
-
-                        ElapsedTime := CurrentDateTime - StartTime;
-                        DialogWindow.Update(1, TaskStatus);
-                        DialogWindow.Update(2, FormatDuration(ElapsedTime));
-
-                        if TaskScheduler.TaskExists(FailingTaskId) then
-                            Sleep(PollIntervalMs);
-
-                    until (not TaskScheduler.TaskExists(FailingTaskId)) or (ElapsedTime > TimeoutMs);
-
-                    DialogWindow.Close();
-
-                    // Show results
-                    Message('Failure handler executed!\' +
-                            '\' +
-                            'Microsoft''s RecordID pattern:\' +
-                            '• Main task received log record via TableNo\' +
-                            '• Task intentionally failed\' +
-                            '• Failure handler received THE SAME record\' +
-                            '• Handler used GetLastErrorText() for error details\' +
-                            '\' +
-                            'View Task Execution Log to see:\' +
-                            '• Error Message (from GetLastErrorText)\' +
-                            '• Handler Message (confirmation handler ran)');
-
-                    // Open log page
+                    // Open log page to monitor results
                     Page.Run(Page::"Task Execution Log");
                 end;
             }
@@ -320,16 +260,4 @@ page 50112 "Task Scheduler Demo"
             }
         }
     }
-
-    local procedure FormatDuration(Duration: Duration): Text
-    var
-        TotalMs: BigInteger;
-        Seconds: Integer;
-        Ms: Integer;
-    begin
-        TotalMs := Duration;
-        Seconds := TotalMs div 1000;
-        Ms := TotalMs mod 1000;
-        exit(StrSubstNo('%1.%2s', Seconds, Ms));
-    end;
 }
