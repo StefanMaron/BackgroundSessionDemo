@@ -20,7 +20,7 @@ table 50113 "Task Execution Log"
             Caption = 'Execution Time';
             DataClassification = SystemMetadata;
         }
-        field(3; Status; Enum "Task Status")
+        field(3; Status; Enum "Task Status PTE")
         {
             Caption = 'Status';
             DataClassification = SystemMetadata;

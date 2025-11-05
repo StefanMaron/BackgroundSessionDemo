@@ -1,7 +1,7 @@
 /// <summary>
 /// Task Status enumeration
 /// </summary>
-enum 50110 "Task Status"
+enum 50110 "Task Status PTE"
 {
     Extensible = false;
 

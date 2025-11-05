@@ -23,6 +23,8 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
   "runtime": "16.0",
   "features": [
     "NoImplicitWith"
